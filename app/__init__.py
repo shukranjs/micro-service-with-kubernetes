@@ -1,10 +1,10 @@
 from app.config import Config
 from flask import Flask
-from flask_restx import Api
-from .extensions import db, jwt, migrate, cache
+from .extensions import db, jwt, migrate, cache, api
+from flask_restx import Resource
 
 
-def create_app(config_class: type = Config) -> Api:
+def create_app(config_class: type = Config) -> Flask:
     """
     Create and configure the Flask application.
 
@@ -22,12 +22,14 @@ def create_app(config_class: type = Config) -> Api:
     jwt.init_app(app)
     migrate.init_app(app, db)
     cache.init_app(app)
+    api.init_app(app)
 
-    api = Api(
-        app,
-        version="1.0",
-        title="User Service",
-        description="User service",
-    )
+    return app
 
-    return api
+@api.route('/home')
+class HelloWorld(Resource):
+    def get(self):
+        return {"hello": "home"}
+
+
+# api.add_resource(HelloWorld, "/root")

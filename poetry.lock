@@ -172,6 +172,23 @@ Flask = ">=0.9"
 Flask-SQLAlchemy = ">=1.0"
 
 [[package]]
+name = "flask-postgresql"
+version = "1.1.1"
+description = "Flask extension for PostgreSQL"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "Flask-PostgreSQL-1.1.1.tar.gz", hash = "sha256:bb9a95151a5cc7e718afa1a8c302c8a458e3411f471671c567ba5896e1eae37c"},
+    {file = "Flask_PostgreSQL-1.1.1-py3-none-any.whl", hash = "sha256:31cd8d8fade12ae3234e9562961b09ce4dfd43e7f00af04f43f75f22caea21b1"},
+]
+
+[package.dependencies]
+Flask = "*"
+
+[package.extras]
+dev = ["pytest (>=6.2)", "pytest-dotenv (>=0.5.2)", "twine (>=3.3.0)"]
+
+[[package]]
 name = "flask-restx"
 version = "1.3.0"
 description = "Fully featured framework for fast, easy and documented API development with Flask"
@@ -724,4 +741,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d3e2317e0b55c91c9a3da38ed3d4d2099709443fcf9057c960244ea63a9efecb"
+content-hash = "9bab11d8be68f499ea4904ad0bab17c2881ba03f378ff42348c42f72ebf80a1f"
