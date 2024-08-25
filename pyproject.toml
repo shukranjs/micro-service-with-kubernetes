@@ -18,6 +18,8 @@ python-dotenv = "^1.0.1"
 psycopg2-binary = "^2.9.9"
 pre-commit = "^3.8.0"
 black = "^24.8.0"
+marshmallow-sqlalchemy = "^1.1.0"
+flask-marshmallow = "^1.2.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,5 +1,3 @@
-from flask import current_app
-
 from .extensions import db
 
 
@@ -8,9 +6,8 @@ class ModelMixin:
         """
         Save the current instance to the database.
         """
-        with current_app.app_context():
-            db.session.add(self)
-            db.session.commit()
+        db.session.add(self)
+        db.session.commit()
 
     def delete_from_db(self) -> None:
         """

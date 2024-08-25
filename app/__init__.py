@@ -1,10 +1,10 @@
 from flask import Flask
 
 from app.config import Config
-from app.database import init_db
+from app.database import close_db, get_db
 from app.models import Base  # noqa
 
-from .extensions import api, cache, db, jwt, migrate
+from .extensions import api, cache, db, jwt, ma, migrate
 
 
 def create_app(config_class: type = Config) -> Flask:
@@ -20,17 +20,25 @@ def create_app(config_class: type = Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_class)
     db.init_app(app)
-
-    session = init_db(app)
-    app.session = session
     jwt.init_app(app)
     migrate.init_app(app, db)
     cache.init_app(app)
+    ma.init_app(app)
+
     api.init_app(app)
 
-    from app.controllers import HealthCheck, UserOperations
+    @app.before_request
+    def connect_to_db():
+        get_db(app)
+
+    @app.after_request
+    def close_db_connection(response):
+        close_db()
+        return response
+
+    from app.controllers import HealthCheck, ListCreateUser
 
     api.add_resource(HealthCheck, "/health-check")
-    api.add_resource(UserOperations, "/users")
+    api.add_resource(ListCreateUser, "/users")
 
     return app
