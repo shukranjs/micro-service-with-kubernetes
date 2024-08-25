@@ -18,6 +18,5 @@ COPY . /app/
 EXPOSE 5000
 
 ENV FLASK_RUN_HOST=0.0.0.0
-
 # Run the application
-CMD ["poetry", "run", "flask", "run"]
+CMD ["./entrypoint.sh"]
