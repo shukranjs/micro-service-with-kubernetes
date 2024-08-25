@@ -1,53 +1,81 @@
 from flask import jsonify, request
-from flask_restx import Resource, fields
+from flask_restx import Resource
+from marshmallow import ValidationError
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.schemas import UserSchema
 
+from .api_models import user_model
 from .extensions import api, db
 from .models import User
 
 
 class HealthCheck(Resource):
-    def get(self):
-        return {"Ok": True}
+    """
+    A simple health check endpoint.
+    """
 
+    def get(self) -> dict:
+        """
+        Returns a health check response.
 
-user_model = api.model(
-    "User",
-    {
-        "first_name": fields.String(
-            required=True, description="First name of the user"
-        ),
-        "last_name": fields.String(required=True, description="Last name of the user"),
-        "username": fields.String(required=True, description="Username of the user"),
-        "email": fields.String(required=True, description="Email of the user"),
-        "password": fields.String(required=True, description="Password of the user"),
-    },
-)
-
-user_schema = UserSchema()
+        Returns:
+            dict: A dictionary indicating the service is healthy.
+        """
+        try:
+            return {"Ok": True}
+        except Exception as e:
+            return {"success": False, "error": str(e)}, 500
 
 
 class ListCreateUser(Resource):
-    def get(self):
-        users_schema = UserSchema(many=True)
-        result = db.session.query(User).all()
-        result = users_schema.dump(result)
-        return jsonify({"data": result})
+    """
+    Resource for listing users and creating a new user.
+    """
+
+    def get(self) -> jsonify:
+        """
+        Retrieves a list of users from the database.
+
+        Returns:
+            jsonify: A JSON response containing the list of users.
+        """
+        try:
+            users_schema = UserSchema(many=True)
+            result = db.session.query(User).all()
+            result = users_schema.dump(result)
+            return jsonify({"data": result})
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"success": False, "error": str(e)}, 500
+        except Exception as e:
+            return {"success": False, "error": str(e)}, 500
 
     @api.expect(user_model)
-    def post(self):
-        json_data = request.get_json()
-        errors = user_schema.validate(json_data)
-        if errors:
-            return errors, 422
+    def post(self) -> tuple[dict, int]:
+        """
+        Creates a new user based on the provided JSON data.
 
-        new_user = user_schema.load(json_data, session=db.session)
-        new_user.save_to_db()
-        # db.session.add(new_user)
-        # db.session.commit()
+        Returns:
+            tuple[dict, int]: A response message with the status code.
+        """
+        try:
+            json_data = request.get_json()
+            errors = UserSchema().validate(json_data)
+            if errors:
+                return {"success": False, "errors": errors}, 422
 
-        return {
-            "message": "User created successfully",
-            "user": user_schema.dump(new_user),
-        }, 201
+            new_user = UserSchema().load(json_data, session=db.session)
+            new_user.set_password(json_data["password"])
+            new_user.save_to_db()
+            return {
+                "success": True,
+                "user": UserSchema().dump(new_user),
+            }, 201
+        except ValidationError as e:
+            return {"success": False, "errors": e.messages}, 422
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {"success": False, "error": str(e)}, 500
+        except Exception as e:
+            return {"success": False, "error": str(e)}, 500
