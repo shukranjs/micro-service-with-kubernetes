@@ -14,3 +14,12 @@ user_model = api.model(
         "password": fields.String(required=True, description="Password of the user"),
     },
 )
+
+
+login_model = api.model(
+    "LoginModel",
+    {
+        "username": fields.String(required=True, description="Username of the user"),
+        "password": fields.String(required=True, description="Password of the user"),
+    },
+)
