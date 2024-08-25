@@ -6,7 +6,8 @@ if __name__ == "__main__":
     """
     Entry point for running the Flask application.
 
-    Starts the Flask application using the create_app() function from the Flaskblog package.
+    Starts the Flask application using the create_app() function from the
+    Flaskblog package.
 
     Usage:
         python run.py

@@ -1,7 +1,9 @@
+from flask import Flask
+
 from app.config import Config
 from app.controllers import HealthCheck
-from flask import Flask
-from .extensions import db, jwt, migrate, cache, api
+
+from .extensions import api, cache, db, jwt, migrate
 
 
 def create_app(config_class: type = Config) -> Flask:
