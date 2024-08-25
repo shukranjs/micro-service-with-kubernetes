@@ -30,6 +30,3 @@ def create_app(config_class: type = Config) -> Flask:
 class HelloWorld(Resource):
     def get(self):
         return {"hello": "home"}
-
-
-# api.add_resource(HelloWorld, "/root")
