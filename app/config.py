@@ -1,7 +1,16 @@
-import os
+from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///user_service.db")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
+    """
+    Configuration settings for the Flask application.
+    """
+
+    SECRET_KEY: str = getenv("SECRET_KEY", "my_secret")
+
+    # SQLAlchemy database URI
+    SQLALCHEMY_DATABASE_URI: str = getenv("SQLALCHEMY_DATABASE_URI")
+
+    DEBUG: bool = True if getenv("FLASK_ENV") == "development" else False

@@ -1,7 +1,7 @@
 from app.config import Config
+from app.controllers import HealthCheck
 from flask import Flask
 from .extensions import db, jwt, migrate, cache, api
-from flask_restx import Resource
 
 
 def create_app(config_class: type = Config) -> Flask:
@@ -24,9 +24,6 @@ def create_app(config_class: type = Config) -> Flask:
     cache.init_app(app)
     api.init_app(app)
 
-    return app
+    api.add_resource(HealthCheck, "/health-check")
 
-@api.route('/home')
-class HelloWorld(Resource):
-    def get(self):
-        return {"hello": "home"}
+    return app
